@@ -1,0 +1,123 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Random;
+
+public class Password extends JPanel implements ActionListener {
+
+    JTextField passwordField;
+    JSpinner lengthSpinner;
+    JCheckBox upper, lower, numbers, symbols;
+    JButton generateBtn, copyBtn;
+
+    String upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    String lowerChars = "abcdefghijklmnopqrstuvwxyz";
+    String numChars = "0123456789";
+    String symChars = "!@#$%^&*()_+-=<>?/";
+
+    public Password() {
+
+        setLayout(null);
+        setBackground(new Color(30,30,40));
+
+        JLabel title = new JLabel("Password Generator");
+        title.setFont(new Font("Arial", Font.BOLD, 28));
+        title.setForeground(Color.WHITE);
+        title.setBounds(100,30,400,40);
+        add(title);
+
+        JLabel lenLabel = new JLabel("Password Length:");
+        lenLabel.setForeground(Color.WHITE);
+        lenLabel.setBounds(100,100,150,30);
+        add(lenLabel);
+
+        lengthSpinner = new JSpinner(new SpinnerNumberModel(8,4,32,1));
+        lengthSpinner.setBounds(250,100,60,30);
+        add(lengthSpinner);
+
+        upper = new JCheckBox("Uppercase", true);
+        upper.setBounds(100,150,120,30);
+        styleCheckBox(upper);
+        add(upper);
+
+        lower = new JCheckBox("Lowercase", true);
+        lower.setBounds(230,150,120,30);
+        styleCheckBox(lower);
+        add(lower);
+
+        numbers = new JCheckBox("Numbers", true);
+        numbers.setBounds(100,190,120,30);
+        styleCheckBox(numbers);
+        add(numbers);
+
+        symbols = new JCheckBox("Symbols");
+        symbols.setBounds(230,190,120,30);
+        styleCheckBox(symbols);
+        add(symbols);
+
+        passwordField = new JTextField();
+        passwordField.setFont(new Font("Consolas",Font.BOLD,18));
+        passwordField.setBounds(50,250,400,40);
+        passwordField.setHorizontalAlignment(JTextField.CENTER);
+        add(passwordField);
+
+        generateBtn = new JButton("Generate");
+        generateBtn.setBounds(100,320,120,40);
+        styleButton(generateBtn);
+        add(generateBtn);
+
+        copyBtn = new JButton("Copy");
+        copyBtn.setBounds(250,320,120,40);
+        styleButton(copyBtn);
+        add(copyBtn);
+
+        generateBtn.addActionListener(this);
+        copyBtn.addActionListener(this);
+    }
+
+    private void styleCheckBox(JCheckBox cb){
+        cb.setBackground(new Color(30,30,40));
+        cb.setForeground(Color.WHITE);
+    }
+
+    private void styleButton(JButton btn){
+        btn.setBackground(new Color(70,130,180));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+    }
+
+    public void actionPerformed(ActionEvent e){
+
+        if(e.getSource()==generateBtn){
+
+            int length = (Integer)lengthSpinner.getValue();
+
+            String chars="";
+
+            if(upper.isSelected()) chars+=upperChars;
+            if(lower.isSelected()) chars+=lowerChars;
+            if(numbers.isSelected()) chars+=numChars;
+            if(symbols.isSelected()) chars+=symChars;
+
+            if(chars.equals("")){
+                JOptionPane.showMessageDialog(this,"Select at least one option!");
+                return;
+            }
+
+            Random r = new Random();
+            String pass="";
+
+            for(int i=0;i<length;i++){
+                pass+=chars.charAt(r.nextInt(chars.length()));
+            }
+
+            passwordField.setText(pass);
+        }
+
+        if(e.getSource()==copyBtn){
+            passwordField.selectAll();
+            passwordField.copy();
+            JOptionPane.showMessageDialog(this,"Password Copied!");
+        }
+    }
+}

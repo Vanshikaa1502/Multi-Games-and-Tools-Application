@@ -1,0 +1,31 @@
+import javax.swing.*;
+import java.awt.*;
+class Menu extends JPanel
+{
+	ImageIcon img1,img2;
+	Image tool,game;
+JButton b1,b2;	
+Menu()
+{
+setLayout(null);
+b1=new JButton("tools");
+b1.setBounds(70,230,100,50);
+add(b1);	
+b2=new JButton("Games");
+b2.setBounds(300,230,100,50);
+add(b2);	
+	img1=new ImageIcon ("tools.jpg");
+tool=img1.getImage();	
+img2=new ImageIcon ("game1.png");
+game=img2.getImage();	
+}	
+public void paintComponent(Graphics g)
+{
+	super.paintComponent(g);
+	 g.drawImage(tool,30,80,this);
+	 g.drawImage(game,250,80,this);
+	
+}
+	
+	
+}

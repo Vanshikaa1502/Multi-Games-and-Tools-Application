@@ -1,0 +1,300 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.sound.sampled.*;
+import java.io.File;
+class Snake extends JPanel implements ActionListener,KeyListener
+{
+	Font f=new Font("",Font.BOLD,100);
+	
+ImageIcon img1,img2,img3,img4,img5,img6;
+Image dot,head,food,over,starting,pause;
+int x[]=new int[100];	
+int y[]=new int[100];	
+int dots=3;
+int score=0;
+int highest=0;
+int c=0;//gameoversound
+int s=0;//startsound
+boolean start_game=false;
+boolean left=false,right=true,up=false,down=false;
+boolean gameover=true; // iske bina starting image me game over bhi show hoga
+boolean pause_game=false;
+int r1=0,r2=0;
+Snake()
+{
+	
+x[0]=120;	
+y[0]=100;
+x[1]=100;
+y[1]=100;
+x[2]=80;
+y[2]=100;
+x[3]=60;
+y[3]=100;
+x[4]=40;
+y[4]=100;
+setBackground(Color.black);
+img1=new ImageIcon ("s_body1.jpg");
+dot=img1.getImage();	
+img2=new ImageIcon ("s_head1.jpg");
+head=img2.getImage().getScaledInstance(20,20,Image.SCALE_SMOOTH);	
+img3=new ImageIcon ("s_apple.jpg");
+food=img3.getImage().getScaledInstance(20,20,Image.SCALE_SMOOTH);	
+
+img4=new ImageIcon ("gameover.jpg");  //self
+over=img4.getImage();	
+img5=new ImageIcon ("starting.png");  //self
+starting=img5.getImage().getScaledInstance(1050,500,Image.SCALE_SMOOTH);	
+img6=new ImageIcon ("pause.jpg");  //self
+pause=img6.getImage();	
+
+	
+	Timer t=new Timer(120,this); 
+	t.start();
+	addKeyListener(this);
+	setFocusable(true);
+	randomDemo();
+}	
+void randomDemo()
+{
+r1=(int)Math.round(Math.random()*50+1);
+r1=r1*20;	
+r2=(int)Math.round(Math.random()*30+1);
+r2=r2*20;	
+	}
+	
+public void playSound(String soundFile)
+{
+    try
+    {
+        File file = new File(soundFile);
+        AudioInputStream audio = AudioSystem.getAudioInputStream(file);
+        Clip clip = AudioSystem.getClip();
+        clip.open(audio);
+        clip.start();
+    }
+    catch(Exception e)
+    {
+        System.out.println("Error playing sound");
+    }
+}	
+	
+public void paintComponent(Graphics g)
+{
+	super.paintComponent(g);
+	
+	g.setColor(Color.white);   //self   border
+	g.drawLine(10,10,10,660);
+	g.drawLine(10,10,1260,10);             
+ 	g.drawLine(1260,10,1260,660);
+	g.drawLine(10,660,1260,660);
+    g.drawString("PRESS  P TO PAUSE THE GAME",20,680);
+    g.drawString("SCORE-",1290,10);
+    g.drawString(""+score,1290,30);
+    g.drawString("HIGHEST SCORE-",1265,50);
+    g.drawString(""+highest,1290,70);
+     
+	if(start_game==true) //iske bina starting image ke sath sath food bhi show hoga
+	{
+	g.drawImage(food,r1,r2,this);
+	}
+	
+	if(start_game==false)  // starting image
+	{
+		
+    g.drawImage(starting,100,100,this);	
+		
+	}
+	
+	for(int i=0;i<dots;i++)
+	{
+	if(i==0&&start_game==true) // jab enter press krenge toh hi head or body dikhegi
+	{
+	g.drawImage(head,x[i],y[i],this);	
+	}
+else
+{
+	
+	if(start_game==true)
+	{
+	g.drawImage(dot,x[i],y[i],this);	
+	}
+}	
+
+}
+if((right==false)&&(left==false)&&(up==false)&&(down==false)&&gameover==false) //self
+{ 
+
+g.drawImage(over,250,200,this);	
+g.drawString("PRESS R TO RELOAD GAME",450,420);	
+score=0;
+g.setFont(f);
+// gameover or r press krne ka show karega
+}
+
+if(pause_game==true&&gameover==true)
+{
+	
+g.drawImage(pause,250,200,this);	
+	
+}
+		
+}
+public void actionPerformed(ActionEvent e)
+{
+if(x[0]==r1&&y[0]==r2)
+{
+dots++;
+randomDemo();	
+score+=5;
+playSound("eat.wav");	
+if(highest<score)
+{
+	highest=score;
+}
+
+	
+}	
+if(start_game)	
+{
+for(int i=dots;i>0;i--)	
+{
+
+if(x[0]==0||y[0]==0||x[0]==1260||y[0]==660)  // self agar border pr jaega toh game band ho ajega
+{
+	
+if(c==0)
+{
+	playSound("over.wav");
+}	
+c++;
+
+
+up=false;
+down=false;
+left=false;
+right=false;	
+gameover=false;
+}
+
+else     
+{
+	if(right==true||left==true||up==true||down==true) //iske bina jab snake amove nhi karega tab bhi image shift ho jaega
+	{
+	x[i]=x[i-1];
+	y[i]=y[i-1];
+	}
+
+}
+
+}	
+
+if(right)
+{
+	x[0]=x[0]+20;
+}
+if(left)
+{
+	x[0]=x[0]-20;
+}
+if(up)
+{
+	y[0]=y[0]-20;
+}
+if(down)
+{
+	y[0]=y[0]+20;
+}
+
+
+}	
+repaint();
+	
+}
+public void keyReleased(KeyEvent e){}
+public void keyPressed(KeyEvent e)
+{
+	if(e.getKeyCode()==KeyEvent.VK_ENTER)
+	{
+start_game=true;
+right=false;
+up=false;
+down=false;
+left=false;
+
+if(s==0)
+{	
+playSound("start.wav");	
+s++;
+}
+	} 
+	
+if(e.getKeyCode()==KeyEvent.VK_LEFT)
+{
+left=true;
+right=false;
+up=false;
+down=false;	
+pause_game=false;
+}	
+if(e.getKeyCode()==KeyEvent.VK_RIGHT)
+{
+left=false;
+right=true;
+up=false;
+down=false;	
+pause_game=false;
+}	
+if(e.getKeyCode()==KeyEvent.VK_UP)
+{
+left=false;
+right=false;
+up=true;
+down=false;	
+pause_game=false;
+}	
+if(e.getKeyCode()==KeyEvent.VK_DOWN)
+{
+left=false;
+right=false;
+up=false;
+down=true;	
+pause_game=false;
+}
+
+if(e.getKeyCode()==KeyEvent.VK_R)    //self r press krne se wapas wohi position pe aajaega
+{
+	c=0;
+	if(x[0]==0||y[0]==0||x[0]==1260||y[0]==660) //r bhi tabhi work karega jab border pr rukega snake
+	{
+	x[0]=120;
+	y[0]=100;
+    x[1]=100;
+	y[1]=100;
+	x[2]=80;
+	y[2]=100;
+	dots=3;
+ right=false;
+left=false;
+up=false;
+down=false;
+gameover=true;
+	}
+	
+}
+
+if(e.getKeyCode()==KeyEvent.VK_P)
+{
+pause_game=true;	
+ right=false;
+left=false;
+up=false;
+down=false;
+	
+	
+}
+	
+}
+public void keyTyped(KeyEvent e){}
+}
